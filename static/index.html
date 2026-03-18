@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 日志分析</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">&#9889;</span>
+        <span class="logo-title">AI 日志分析</span>
+      </div>
+      <div class="model-selector">
+        <label class="model-label" for="model-select">模型</label>
+        <select id="model-select" class="model-select">
+          <option value="deepseek-chat">V3（deepseek-chat）快速</option>
+          <option value="deepseek-reasoner">R1（deepseek-reasoner）深度推理</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Input Card -->
+    <section class="card">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="paste" role="tab">粘贴日志</button>
+        <button class="tab" data-tab="upload" role="tab">上传文件</button>
+      </div>
+
+      <div class="tab-pane active" id="tab-paste">
+        <textarea
+          id="log-textarea"
+          class="log-textarea"
+          placeholder="在此粘贴日志内容...&#10;&#10;支持 Nginx、Java、Python、Docker 等各种格式"
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <div class="tab-pane" id="tab-upload">
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-icon">&#128194;</div>
+          <p>拖放日志文件到此处</p>
+          <p class="upload-hint">或</p>
+          <label class="btn-secondary" for="file-input">选择文件</label>
+          <input type="file" id="file-input" accept=".log,.txt,.out,.err,.json" hidden />
+        </div>
+        <div class="file-info hidden" id="file-info">
+          <span>&#128196;</span>
+          <span id="file-name"></span>
+          <button class="btn-clear" id="clear-file" title="清除">&#10005;</button>
+        </div>
+      </div>
+
+      <div class="input-footer">
+        <span class="char-count" id="char-count">0 字符</span>
+        <button class="btn-primary" id="analyze-btn" disabled>
+          开始分析 &rarr;
+        </button>
+      </div>
+    </section>
+
+    <!-- Loading -->
+    <div class="loading hidden" id="loading">
+      <div class="spinner"></div>
+      <p>AI 正在分析日志，请稍候...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div class="alert-error hidden" id="error-msg"></div>
+
+    <!-- Results -->
+    <div class="results hidden" id="results">
+
+      <!-- Stats Bar -->
+      <div class="stats-bar" id="stats-bar"></div>
+
+      <!-- Summary -->
+      <div class="card result-section">
+        <h2 class="section-title">&#128202; 分析摘要</h2>
+        <p id="summary-text" class="summary-text"></p>
+      </div>
+
+      <!-- Errors -->
+      <div class="card result-section" id="errors-section">
+        <h2 class="section-title">&#128308; 错误详情</h2>
+        <div id="errors-list"></div>
+      </div>
+
+      <!-- Anomalies -->
+      <div class="card result-section" id="anomalies-section">
+        <h2 class="section-title">&#9888; 异常行为</h2>
+        <ul id="anomalies-list" class="plain-list"></ul>
+      </div>
+
+      <!-- Performance -->
+      <div class="card result-section" id="perf-section">
+        <h2 class="section-title">&#9889; 性能问题</h2>
+        <ul id="perf-list" class="plain-list"></ul>
+      </div>
+
+      <!-- Suggestions -->
+      <div class="card result-section" id="suggestions-section">
+        <h2 class="section-title">&#128161; 解决建议</h2>
+        <div id="suggestions-list"></div>
+      </div>
+
+      <!-- Full Report -->
+      <div class="card result-section">
+        <h2 class="section-title">&#128203; 详细报告</h2>
+        <div id="report-content" class="report-content"></div>
+      </div>
+
+      <!-- Token Usage -->
+      <p class="token-info" id="token-info"></p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,71 +1,8 @@
-version: '3.8'
-
 services:
-  # 数据库服务
-  db:
-    image: postgres:15-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=fast_mm
-      - POSTGRES_PASSWORD=fast_mm_secret
-      - POSTGRES_DB=fast_mm
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - fast_mm_net
-
-  # 缓存服务
-  redis:
-    image: redis:7-alpine
-    restart: always
-    ports:
-      - "6379:6379"
-    networks:
-      - fast_mm_net
-
-  # 后端服务
-  backend:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    restart: always
-    depends_on:
-      - db
-      - redis
-    environment:
-      - POSTGRES_SERVER=db
-      - POSTGRES_USER=fast_mm
-      - POSTGRES_PASSWORD=fast_mm_secret
-      - POSTGRES_DB=fast_mm
-      - REDIS_HOST=redis
-      # 可以在这里覆盖其他配置
+  app:
+    build: .
     ports:
       - "8000:8000"
-    networks:
-      - fast_mm_net
-    # 启动前等待数据库就绪 (简单方式，生产环境建议用 wait-for-it 等脚本)
-    # 并且可以在这里运行数据库迁移
-    command: >
-      sh -c "alembic upgrade head && 
-             uvicorn app.main:app --host 0.0.0.0 --port 8000"
-
-  # 前端服务
-  frontend:
-    build: 
-      context: ./web
-      dockerfile: Dockerfile
-    restart: always
-    depends_on:
-      - backend
-    ports:
-      - "80:80"
-    networks:
-      - fast_mm_net
-
-volumes:
-  postgres_data:
-
-networks:
-  fast_mm_net:
+    env_file:
+      - .env
+    restart: unless-stopped
